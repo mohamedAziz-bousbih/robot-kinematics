@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package with test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+
+      - name: Unit tests
+        run: python -m pytest -v
+
+      - name: CLI smoke test
+        run: |
+          robokin dh puma560
+          robokin fk puma560 0 45 -180 0 45 0
+          robokin ik puma560 0.5 -0.2 -0.1 180 0 0 --no-limits
+          robokin workspace scara --samples 1000000
+
+      - name: Example scripts
+        env:
+          MPLBACKEND: Agg
+        run: |
+          mkdir -p "$RUNNER_TEMP/img"
+          python examples/workspace_plots.py --out "$RUNNER_TEMP/img" --samples 100000
+          python examples/ik_solutions.py --out "$RUNNER_TEMP/img"
+          python examples/trajectories.py --out "$RUNNER_TEMP/img"
+          python examples/collision_demo.py --out "$RUNNER_TEMP/img"
+          python examples/ik_benchmark.py --poses 50

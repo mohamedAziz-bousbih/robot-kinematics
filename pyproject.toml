@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robokin"
+version = "0.1.0"
+description = "Kinematics, trajectory planning and collision checking for serial robot arms"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Mohamed Aziz Bousbih" }]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
+
+[project.optional-dependencies]
+test = ["pytest>=7.4"]
+
+[project.scripts]
+robokin = "robokin.cli:main"
+
+[project.urls]
+Repository = "https://github.com/mohamedAziz-bousbih/robot-kinematics"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Lets the tests run from a plain checkout without installing the package.
+pythonpath = ["src"]
+addopts = "-ra"
